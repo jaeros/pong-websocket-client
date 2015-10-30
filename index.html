@@ -3,13 +3,22 @@
         <title>Pong</title>
     </head>
     <body>
+        <style>
+            .messageDiv {
+                position: absolute;
+                width: 400px;
+                height: 400px;
+                background-color: rgba(255,255,255,.5);
+            }
+        </style>
+        <div class="messageDiv">
+            <div id="message">Joining game...</div>
+        </div>
         <canvas id="cv" width="400" height="400">
-
         </canvas>
         <script type="text/javascript">
 
             window.$ = window.jQuery = require('./bower_components/jquery/dist/jquery.min.js');
-            console.log(window.$);
             var ctx = document.getElementById('cv').getContext('2d');
 
             window.requestAnimationFrame(draw);
@@ -29,11 +38,12 @@
             // called when a message received from server
             ws.onmessage = function (evt) {
                 var data = JSON.parse(evt.data);
-                console.log("Got: ", data);
                 if (data.messageType == 'CHANGE_STATE') {
                     console.log("State changed: " + data.data);
+                    stateChanged(data.data);
                 } else if (data.messageType == 'COUNT_DOWN') {
                     console.log("Counting down: " + data.data);
+                    $('#message').text('Game starting in ' + data.data);
                 } else if (data.messageType == 'GAME_UPDATE') {
                     ballPosition = data.data.ball;
                     players = data.data.players
@@ -51,6 +61,25 @@
             ws.onerror = function(err) {
                 console.log("ERROR!", err )
             };
+
+            function stateChanged(state) {
+                var message = $('#message');
+                if (state === "WAIT_P2") {
+                    $('.messageDiv').show();
+                    message.text('Waiting for other player...');
+                } else if (state === "STARTING") {
+                    $('.messageDiv').show();
+                    message.text('Game starting soon');
+                } else if (state === "PLAYING") {
+                    $('.messageDiv').hide();
+                } else if (state === "SHOW_SCORE") {
+                    $('.messageDiv').show()
+                    message.text('Current score');
+                } else if (state === "GAME_OVER") {
+                    $('.messageDiv').show();
+                    message.text('Game over')
+                }
+            }
 
             function draw() {
                 ctx.clearRect(0,0,400,400);
