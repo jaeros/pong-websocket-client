@@ -25,6 +25,14 @@
 
             var ballPosition = {x: 100, y:100};
             var players = [];
+            var currentState;
+
+            $('#cv').mousemove(function(evt) {
+                if (currentState === 'PLAYING') {
+                    y = evt.clientY;
+                    ws.send(JSON.stringify({messageType:'PLAYER_INPUT',data:{mouseY: y}}));
+                }
+            });
 
             // establish the communication channel over a websocket
             var ws = new WebSocket("ws://localhost:8000/games");
@@ -63,6 +71,7 @@
             };
 
             function stateChanged(state) {
+                currentState = state;
                 var message = $('#message');
                 if (state === "WAIT_P2") {
                     $('.messageDiv').show();
@@ -84,20 +93,16 @@
             function draw() {
                 ctx.clearRect(0,0,400,400);
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+                // Draw ball
                 ctx.fillStyle = 'rgb(0,0,255)';
                 ctx.strokeStyle = 'rgb(0,0,255)';
 
-                // console.log("tick");
-                // $.get('http://localhost:8000/games', {}, function(data) {
-                //     // console.log("Got data",$($.parseXML(data)).find('count').first());
-                //     console.log("response");
-                //     if (data) {
-                //         ballPosition = data.games[0].ball;
-                //     }
-                // }, 'json');
-
                 ctx.fillRect(ballPosition.x-10+200,ballPosition.y-10+200,20,20);
 
+                // Draw paddles
+                ctx.fillStyle = 'rgb(0,0,0)';
+                ctx.strokeStyle = 'rgb(0,0,0)';
                 for (var i = 0; i < players.length; i++) {
                     var player = players[i];
                     ctx.fillRect(player.x, player.y - 50, 30, 100);
