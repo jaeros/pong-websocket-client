@@ -1,0 +1,23 @@
+{
+  "name": "pong_client",
+  "version": "0.1.0",
+  "authors": [
+    "Jeff Stoddard <jstoddard@qualtrics.com>"
+  ],
+  "description": "Client for simple pong server",
+  "main": "main.js",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "jaeros.com",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}
