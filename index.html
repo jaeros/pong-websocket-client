@@ -23,14 +23,23 @@
             // called when socket connection established
             ws.onopen = function() {
                 console.log("Websocket open!");
+                ws.send(JSON.stringify({messageType:'JOIN_GAME'}));
             };
              
             // called when a message received from server
             ws.onmessage = function (evt) {
                 var data = JSON.parse(evt.data);
                 console.log("Got: ", data);
-                ballPosition = data.ball;
-                players = data.players;
+                if (data.messageType == 'CHANGE_STATE') {
+                    console.log("State changed: " + data.data);
+                } else if (data.messageType == 'COUNT_DOWN') {
+                    console.log("Counting down: " + data.data);
+                } else if (data.messageType == 'GAME_UPDATE') {
+                    ballPosition = data.data.ball;
+                    players = data.data.players
+                } else {
+                    console.log("Unknown!");
+                }
             };
              
             // called when socket connection closed
